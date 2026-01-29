@@ -1,3 +1,16 @@
 {
-	"cSpell.words": ["FLAC", "pygame", "Tkinter", "venv", "Vorbis"]
+	"cSpell.words": [
+		"endevent",
+		"FLAC",
+		"padx",
+		"pady",
+		"pygame",
+		"selectmode",
+		"showvalue",
+		"Tkinter",
+		"USEREVENT",
+		"venv",
+		"Vorbis",
+		"yscrollcommand"
+	]
 }

@@ -14,7 +14,7 @@ class Audion:
     def __init__(self, root):
         self.root = root
         self.root.title("Audion Music Player")
-        self.root.geometry("700x550")
+        self.root.geometry("700x700")
         self.root.resizable(True, True)
         
         # Initialize pygame mixer only (not the full pygame which includes video)
@@ -93,6 +93,45 @@ class Audion:
             font=("Arial", 9)
         )
         self.time_remaining_label.pack(side=tk.LEFT, padx=5)
+        
+        # Progress bar and time display
+        progress_frame = tk.Frame(self.root)
+        progress_frame.pack(pady=10, padx=20, fill=tk.X)
+        
+        # Time labels
+        time_frame = tk.Frame(progress_frame)
+        time_frame.pack(fill=tk.X)
+        
+        self.current_time_label = tk.Label(
+            time_frame,
+            text="0:00",
+            font=("Arial", 9),
+            fg="gray"
+        )
+        self.current_time_label.pack(side=tk.LEFT)
+        
+        self.total_time_label = tk.Label(
+            time_frame,
+            text="0:00",
+            font=("Arial", 9),
+            fg="gray"
+        )
+        self.total_time_label.pack(side=tk.RIGHT)
+        
+        # Progress bar (slider)
+        self.progress_slider = tk.Scale(
+            progress_frame,
+            from_=0,
+            to=100,
+            orient=tk.HORIZONTAL,
+            showvalue=False,
+            length=400,
+            sliderlength=20,
+            command=self.on_progress_drag
+        )
+        self.progress_slider.pack(fill=tk.X, pady=5)
+        self.progress_slider.bind("<ButtonPress-1>", self.on_progress_press)
+        self.progress_slider.bind("<ButtonRelease-1>", self.on_progress_release)
         
         # File/Folder buttons
         file_button_frame = tk.Frame(self.root)
@@ -303,6 +342,10 @@ class Audion:
         minutes = int(seconds // 60)
         secs = int(seconds % 60)
         return f"{minutes}:{secs:02d}"
+    
+    def on_progress_press(self, event):
+        """Called when user clicks on the progress bar"""
+        self.seeking = True
     
     def on_progress_release(self, event):
         """Called when user releases the progress bar - seek to that position"""
@@ -539,21 +582,18 @@ class Audion:
     def check_music_end(self):
         # Update progress bar and time if playing
         if self.is_playing and not self.seeking and self.song_length > 0:
-            # Get current position in milliseconds since the song started
+            # Get current position (pygame.mixer.music.get_pos() returns milliseconds played)
             pos_ms = pygame.mixer.music.get_pos()
-            
-            # get_pos() returns time since music.play() was called
-            # Convert to seconds and add to our tracked position from seeks
             if pos_ms >= 0:
-                current_time = self.current_position + (pos_ms / 1000.0)
+                self.current_position += 0.1  # Approximate increment
                 
-                # Make sure we don't exceed song length
-                if current_time <= self.song_length:
-                    self.progress_var.set(current_time)
+                # Update progress slider
+                if self.current_position <= self.song_length:
+                    self.progress_var.set(self.current_position)
                     
                     # Update time labels
-                    remaining = max(0, self.song_length - current_time)
-                    self.time_elapsed_label.config(text=self.format_time(current_time))
+                    remaining = self.song_length - self.current_position
+                    self.time_elapsed_label.config(text=self.format_time(self.current_position))
                     self.time_remaining_label.config(text=self.format_time(remaining))
         
         # Check if music has ended by checking if it's busy playing
