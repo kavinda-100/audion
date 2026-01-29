@@ -20,16 +20,19 @@ A modern, sleek music player built with Python featuring a clean UI inspired by 
 ## 🚀 Quick Installation
 
 ### Linux (One Command)
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/kavinda-100/audion/main/install_linux.sh | bash
 ```
 
 ### Windows
+
 1. Download [`install_windows.bat`](https://raw.githubusercontent.com/kavinda-100/audion/main/install_windows.bat)
 2. Double-click to run
 3. Follow the prompts
 
 ### What the Installation Does
+
 - ✅ Installs all system dependencies automatically
 - ✅ Downloads the latest version from GitHub
 - ✅ Sets up Python environment with all required packages
@@ -41,23 +44,23 @@ curl -fsSL https://raw.githubusercontent.com/kavinda-100/audion/main/install_lin
 ## 🎯 Usage
 
 1. **Load Music**:
-   - Click "📂 Open File" for a single track
-   - Click "📁 Open Folder" to load an entire music directory
+    - Click "📂 Open File" for a single track
+    - Click "📁 Open Folder" to load an entire music directory
 
 2. **Playback**:
-   - Use the modern control buttons for playback
-   - Drag the progress bar to seek to any position
-   - Adjust volume with the smooth slider
+    - Use the modern control buttons for playback
+    - Drag the progress bar to seek to any position
+    - Adjust volume with the smooth slider
 
 3. **Playlist**:
-   - View all tracks in the beautiful playlist
-   - Double-click any track to play it immediately
-   - Current track is highlighted with a ▶ indicator
+    - View all tracks in the beautiful playlist
+    - Double-click any track to play it immediately
+    - Current track is highlighted with a ▶ indicator
 
 4. **Smart Features**:
-   - Toggle 🔀 Shuffle for random playback
-   - Toggle 🔁 Repeat to loop the playlist
-   - Your playlist and preferences are automatically saved
+    - Toggle 🔀 Shuffle for random playback
+    - Toggle 🔁 Repeat to loop the playlist
+    - Your playlist and preferences are automatically saved
 
 ## 🎵 Supported Formats
 
@@ -105,12 +108,14 @@ python build_executable.py
 ## 📋 System Requirements
 
 ### Minimum Requirements
+
 - **Python**: 3.8 or higher
 - **RAM**: 512 MB
 - **Storage**: 100 MB free space
 - **OS**: Windows 10+, macOS 10.14+, or Linux (Ubuntu 18.04+)
 
 ### Dependencies (automatically installed)
+
 - `pygame` - Audio playback engine
 - `mutagen` - Audio metadata reading
 - `tkinter` - GUI framework (included with Python)
@@ -118,11 +123,13 @@ python build_executable.py
 ## 🗂️ Installation Locations
 
 ### Linux
+
 - **App**: `~/.local/share/audion/`
 - **Executable**: Available as `audion` command
 - **Config**: `~/.audion_config.json`
 
-### Windows  
+### Windows
+
 - **App**: `%USERPROFILE%\AppData\Local\Audion\`
 - **Shortcuts**: Desktop and Start Menu
 - **Config**: `%USERPROFILE%\.audion_config.json`
@@ -130,16 +137,19 @@ python build_executable.py
 ## 🔧 Troubleshooting
 
 ### Audio Issues
+
 - Ensure your system has audio drivers installed
 - Check volume mixer settings
 - Try different audio formats
 
 ### Installation Issues
+
 - **Linux**: Ensure you have `curl` installed
 - **Windows**: Run as Administrator if needed
 - **Both**: Check internet connection
 
 ### Performance
+
 - Large playlists (1000+ tracks) may take time to load
 - FLAC files require more processing power
 
