@@ -62,7 +62,7 @@ if %errorLevel% neq 0 (
 
 REM Set installation directory
 set INSTALL_DIR=%USERPROFILE%\AppData\Local\Audion
-set REPO_URL=https://github.com/your-username/audion.git
+set REPO_URL=https://github.com/kavinda-100/audion.git
 
 REM Setup repository
 echo %BLUE%[INFO]%ESC% Setting up Audion repository...

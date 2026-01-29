@@ -129,7 +129,7 @@ install_system_deps() {
 # Clone or update repository
 setup_repo() {
     local INSTALL_DIR="$HOME/.local/share/audion"
-    local REPO_URL="https://github.com/your-username/audion.git"  # Replace with actual repo URL
+    local REPO_URL="https://github.com/kavinda-100/audion.git"
     
     print_info "Setting up Audion repository..."
     
