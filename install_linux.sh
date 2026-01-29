@@ -61,6 +61,131 @@ detect_distro() {
     print_info "Detected: $PRETTY_NAME"
 }
 
+# Check if dependencies are available
+check_dependencies() {
+    print_info "Checking system dependencies..."
+    
+    local missing_deps=()
+    local all_good=true
+    
+    # Check Python 3.8+
+    if command -v python3 >/dev/null 2>&1; then
+        local python_version=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+        local python_major=$(echo $python_version | cut -d. -f1)
+        local python_minor=$(echo $python_version | cut -d. -f2)
+        
+        if [[ $python_major -ge 3 && $python_minor -ge 8 ]]; then
+            print_success "Python $python_version found"
+        else
+            print_error "Python $python_version found, but 3.8+ required"
+            missing_deps+=("Python 3.8+")
+            all_good=false
+        fi
+    else
+        print_error "Python 3 not found"
+        missing_deps+=("Python 3.8+")
+        all_good=false
+    fi
+    
+    # Check pip
+    if python3 -m pip --version >/dev/null 2>&1; then
+        print_success "pip found"
+    else
+        print_error "pip not found"
+        missing_deps+=("python3-pip")
+        all_good=false
+    fi
+    
+    # Check venv
+    if python3 -m venv --help >/dev/null 2>&1; then
+        print_success "venv found"
+    else
+        print_error "venv not found"
+        missing_deps+=("python3-venv")
+        all_good=false
+    fi
+    
+    # Check Git
+    if command -v git >/dev/null 2>&1; then
+        print_success "Git found"
+    else
+        print_error "Git not found"
+        missing_deps+=("git")
+        all_good=false
+    fi
+    
+    # Check Tkinter
+    if python3 -c "import tkinter" >/dev/null 2>&1; then
+        print_success "Tkinter found"
+    else
+        print_error "Tkinter not found"
+        missing_deps+=("python3-tk or tkinter")
+        all_good=false
+    fi
+    
+    # Check PortAudio (try multiple methods)
+    if pkg-config --exists portaudio-2.0 >/dev/null 2>&1; then
+        print_success "PortAudio found (pkg-config)"
+    elif [[ -f /usr/include/portaudio.h ]] || [[ -f /usr/local/include/portaudio.h ]]; then
+        print_success "PortAudio found (headers)"
+    elif ldconfig -p | grep -q libportaudio >/dev/null 2>&1; then
+        print_success "PortAudio found (library)"
+    else
+        print_warning "PortAudio not detected (may still work)"
+        missing_deps+=("portaudio development files")
+    fi
+    
+    # Check SDL2 (basic check)
+    if pkg-config --exists sdl2 >/dev/null 2>&1; then
+        print_success "SDL2 found (pkg-config)"
+    elif ldconfig -p | grep -q libSDL2 >/dev/null 2>&1; then
+        print_success "SDL2 found (library)"
+    else
+        print_warning "SDL2 not detected (may still work)"
+        missing_deps+=("SDL2 libraries")
+    fi
+    
+    # Report results
+    if [[ ${#missing_deps[@]} -gt 0 ]]; then
+        echo
+        print_warning "Missing or uncertain dependencies:"
+        for dep in "${missing_deps[@]}"; do
+            print_info "  • $dep"
+        done
+        echo
+        
+        if [[ "$all_good" = false ]]; then
+            print_error "Critical dependencies are missing. Please install them first."
+            print_info "On your system, try:"
+            case $DISTRO in
+                *suse*|opensuse*)
+                    print_info "  sudo zypper install python3 python3-pip python3-tk git portaudio-devel libSDL2-devel"
+                    ;;
+                *alpine*)
+                    print_info "  sudo apk add python3 py3-pip python3-dev python3-tkinter git portaudio-dev sdl2-dev"
+                    ;;
+                *gentoo*)
+                    print_info "  sudo emerge python:3.8 dev-python/pip dev-lang/tk git media-libs/portaudio media-libs/libsdl2"
+                    ;;
+                *)
+                    print_info "  Use your package manager to install: python3 python3-pip python3-tk git portaudio-dev libsdl2-dev"
+                    ;;
+            esac
+            echo
+            read -p "Continue anyway? (y/N): " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                print_info "Installation cancelled. Please install the missing dependencies first."
+                exit 1
+            fi
+        else
+            print_info "Some optional dependencies are missing, but installation can continue."
+        fi
+    else
+        print_success "All dependencies found!"
+    fi
+}
+
 # Install system dependencies
 install_system_deps() {
     print_info "Installing system dependencies..."
@@ -111,17 +236,8 @@ install_system_deps() {
             ;;
         *)
             print_warning "Unsupported distribution: $DISTRO"
-            print_info "Please install the following manually:"
-            print_info "- Python 3.8+ with pip and venv"
-            print_info "- Git"
-            print_info "- PortAudio development files"
-            print_info "- Tkinter (python3-tk)"
-            print_info "- SDL2 libraries"
-            read -p "Continue anyway? (y/N): " -n 1 -r
-            echo
-            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-                exit 1
-            fi
+            print_info "Attempting to check for existing dependencies..."
+            check_dependencies
             ;;
     esac
 }
