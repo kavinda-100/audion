@@ -21,6 +21,9 @@ class Audion:
         # Set minimum window size
         self.root.minsize(700, 550)
         
+        # Set window icon
+        self.set_window_icon()
+        
         # Configure modern styling
         self.setup_modern_theme()
         
@@ -48,6 +51,17 @@ class Audion:
         self.setup_ui()
         self.load_saved_playlist()
         self.check_music_end()
+        
+    def set_window_icon(self):
+        """Set the window icon from assets folder"""
+        try:
+            icon_path = os.path.join("assets", "audion.png")
+            if os.path.exists(icon_path):
+                icon = tk.PhotoImage(file=icon_path)
+                self.root.iconphoto(True, icon)
+        except Exception as e:
+            # Silently fail if icon can't be loaded
+            pass
         
     def setup_modern_theme(self):
         """Configure modern, sleek UI theme"""
